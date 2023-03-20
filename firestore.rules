@@ -1,0 +1,15 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    //User collection
+    match /users/{user_id}{
+      //User can read and create documents only if he's logged
+      allow read, create: if request.auth != null;
+      //Documents can be modified only by the creator
+      allow update: if request.auth.uid == user_id;
+    }   //Project collection
+    match /projects/{projects_id} {
+      allow read, create, update: if request.auth != null;
+      allow delete: if request.auth.uid == resource.data.createdBy.id;
+    } 
+  }
+}
